@@ -5,9 +5,22 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+var (
+	proxyAddr = ""
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file %v", err)
+	}
+	proxyAddr = os.Getenv("PROXY_URL")
+	
 	fmt.Println("start")
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -27,9 +40,9 @@ func main() {
 
 func handleConn(dst net.Conn) {
 	defer dst.Close()
-	fmt.Println("start2")
-	src, err := net.Dial("tcp", "localhost:9090")
-	fmt.Println(src)
+	// fmt.Println("start2")
+	src, err := net.Dial("tcp", proxyAddr)
+	// fmt.Println(src)
 	if err != nil {
 		log.Fatalln(err)
 	}
